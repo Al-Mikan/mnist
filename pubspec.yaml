@@ -65,7 +65,8 @@ flutter:
   assets:
     - assets/models/
     - assets/labels/labels.csv
-    - assets/test.png
+    - assets/mnistdata/
+
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

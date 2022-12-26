@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'dart:developer';
 // Uint8List などの型を扱う場合があるので以下もインポートすると良いです
 
 import 'package:flutter/services.dart';
@@ -340,7 +341,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<File> getImageFileFromAssets(String path) async {
-    final byteData = await rootBundle.load('assets/$path');
+    final byteData = await rootBundle.load('assets/mnistdata/$path');
 
     final file =
         File('${(await getApplicationDocumentsDirectory()).path}/$path');
@@ -363,16 +364,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   predict(im.Image imResize) async {
     //pytorch model
-    Model imageModel = await PyTorchMobile.loadModel('assets/models/mayu1.pt');
+    print("成功");
+    Model imageModel = await PyTorchMobile.loadModel('assets/models/test.pt');
     //save to file
-    print("predict");
+    inspect(imageModel);
     // var pngBytes = im.encodePng(imResize);
-    // File file = File('assets/test.png');
-    File f = await getImageFileFromAssets('test.png');
+    File f = await getImageFileFromAssets('2.png');
     // await file.writeAsBytes(pngBytes);
     var imagePrediction =
         imageModel.getImagePrediction(f, 28, 28, "assets/labels/labels.csv");
-    print(imagePrediction);
+    inspect(imagePrediction);
     print("yes");
     print("imagePrediction: $imagePrediction");
     return imagePrediction;
