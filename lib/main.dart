@@ -13,6 +13,7 @@ import 'package:pytorch_mobile/model.dart';
 import 'package:pytorch_mobile/pytorch_mobile.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -318,7 +319,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   im.copyResize(imImage!, width: 28, height: 28);
               print("予測");
               // 予測
-              var res = await predict(imResize);
+              String res = await predict(imResize);
+              //var res = 0;
               print("終了");
               // 予測結果を表示
               showDialog(
@@ -337,6 +339,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Future<File> getImageFileFromAssets(String path) async {
+    final byteData = await rootBundle.load('assets/$path');
+
+    final file =
+        File('${(await getApplicationDocumentsDirectory()).path}/$path');
+    await file.writeAsBytes(byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+    return file;
+  }
+
   resizeImage(ui.Image image) async {
     // 画像をリサイズ
     final ui.PictureRecorder recorder = ui.PictureRecorder();
@@ -350,19 +363,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   predict(im.Image imResize) async {
     //pytorch model
-    Model imageModel = await PyTorchMobile.loadModel('models/my_mnist_model.pth');
+    Model imageModel = await PyTorchMobile.loadModel('assets/models/mayu1.pt');
     //save to file
-    var pngBytes = im.encodePng(imResize);
-    var file = File('models/test.png');
-    await file.writeAsBytes(pngBytes);
+    print("predict");
+    // var pngBytes = im.encodePng(imResize);
+    // File file = File('assets/test.png');
+    File f = await getImageFileFromAssets('test.png');
+    // await file.writeAsBytes(pngBytes);
     var imagePrediction =
-        imageModel.getImagePrediction(file, 28, 28, "models/labels.csv");
+        imageModel.getImagePrediction(f, 28, 28, "assets/labels/labels.csv");
+    print(imagePrediction);
+    print("yes");
     print("imagePrediction: $imagePrediction");
     return imagePrediction;
   }
 }
-
-
 
 // 実際に描画するキャンバス
 class PaintCanvas extends CustomPainter {
